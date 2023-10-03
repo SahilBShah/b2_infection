@@ -1,0 +1,280 @@
+---
+title: "Glaunsinger Differential Gene Expression Analysis (Isoseq)"
+author: "Bioinformatics Core"
+output:
+    html_document:
+      keep_md: TRUE
+---
+
+```{r load_packages, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
+
+
+library(dplyr)
+library(edgeR)
+
+library(tidyverse)
+
+#library(sva)
+```
+
+
+```{r read_count_data, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
+#setwd("~/Center/work/CORE/analysis/Glaunsinger_B_UCB/re_analysis_2022/") # set to your working directory
+
+setwd("../data/DE_analysis/")
+
+#counts <- read.delim("glaunsinger_2022_transcript_counts.txt", sep = "\t")
+#counts <- read.delim("mhv68_transcript_counts.txt", sep = "\t")
+counts <- read.delim("mm10_transcript_counts.txt", sep = "\t")
+
+pb_to_ensembl <- data.frame("Transcript" = rownames(counts),
+                            "Gene_ID" = counts$gene_id)
+
+#DE of genes
+counts <- counts %>% group_by(gene_id) %>% summarise_each(list(sum))
+##MHV68
+#counts <- counts %>% dplyr::select(-c('Ctrl_Mock_R1_Cell', 'Ctrl_Mock_R2_Cell', 'Brf1_Mock_R1_Cell', 'Brf1_Mock_R2_Cell'))
+#Needed if DE of genes
+counts <- counts %>% column_to_rownames(., var = 'gene_id')
+
+#DE of isoforms
+#counts <- counts %>% dplyr::select(-c('gene_id'))
+##MHV68
+#counts <- counts %>% dplyr::select(-c('gene_id', 'Ctrl_Mock_R1_Cell', 'Ctrl_Mock_R2_Cell', 'Brf1_Mock_R1_Cell', 'Brf1_Mock_R2_Cell'))
+
+dim(counts) # number of genes
+head(counts)
+
+#write.table(counts,"mm10_gene_counts.txt",sep="\t",quote=F, row.names=T)
+```
+
+```{r dgelist, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
+d0 <- DGEList(counts)
+#d0$samples
+```
+
+
+### Metadata
+```{r metadata, echo=FALSE, warning=FALSE, message=FALSE}
+samples <- colnames(counts)
+
+pre <- sapply(strsplit(samples,"_"), `[`, 1)
+suff <- sapply(strsplit(samples,"_"), `[`, 2)
+
+treatment <- c()
+for (i in 1:length(pre)) {
+  treatment <- c(treatment, paste0(pre[i],"_",suff[i]))
+}
+metadata <- data.frame("group" = as.factor(treatment), row.names = samples)
+metadata
+```
+
+```{r interaction, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
+metadata$group
+```
+
+```{r preprocess , echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
+d0 <- calcNormFactors(d0)
+d0$samples
+```
+
+```{r filter, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
+cutoff <- 2
+drop <- which(apply(cpm(d0), 1, max) < cutoff)
+d <- d0[-drop,]
+
+na.omit(d)
+
+```
+
+### Visualizaing your data with a Multidimensional scaling (MDS) plot. 
+
+##### Colored by groups
+```{r mds, fig.width=6, echo=FALSE}
+plotMDS(d, col = as.numeric(metadata$group), cex=1)
+```
+
+
+```{r cpm, , echo=FALSE, warning=FALSE, message=FALSE, , results='hide'}
+logcpm <- cpm(d, prior.count=2, log=TRUE)
+#write.table(logcpm,"mm10_normalized_counts_be.txt",sep="\t",quote=F, row.names=T)
+```
+
+```{r model, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
+group <- metadata$group
+
+mm <- model.matrix(~0 + group)
+#Batch effect
+#mm <- model.matrix(~0 + group + batch)
+```
+
+
+```{r lmfit, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
+y <- voom(d, mm, plot = F)
+
+fit <- lmFit(y, mm)
+head(coef(fit))
+```
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
+#anno <- read.delim("GRCm39_biomart_anno.tsv", sep = "\t", header = T)
+#anno <- anno[,-c(2,3,4)]
+#head(anno)
+```
+
+### Differentially expressed genes between Brf1 48hpi and Ctrl 48hpi
+```{r contrast1, echo=FALSE, warning=FALSE}
+contr <- makeContrasts(groupBrf1_48hpi -  groupCtrl_48hpi, levels = colnames(coef(fit)))
+
+tmp <- contrasts.fit(fit, contr)
+tmp <- eBayes(tmp)
+top.table <- topTable(tmp, adjust.method = "BH", sort.by = "P", n = Inf)
+
+top.table$Gene <- rownames(top.table)
+top.table <- top.table[,c("Gene", names(top.table)[1:6])]
+#################
+top.table <- data.frame(top.table, pb_to_ensembl[match(top.table$Gene, pb_to_ensembl$Transcrtipt),2])
+#top.table <- merge(top.table, pb_to_ensembl, on="Gene")
+#top.table <- data.frame(top.table, anno[match(top.table$pb_to_ensembl.match.top.table.Gene..pb_to_ensembl.Transcrtipt..., anno$Gene.stable.ID.version),], logcpm[match(top.table$Gene,rownames(logcpm)),])
+#################
+
+cnames <- colnames(top.table)
+############
+cnames[8] <- "associated.gene"
+#########
+cnames[1] <- "Transcript"
+colnames(top.table) <- cnames
+
+# head(top.table, n = 10)
+
+length(which(top.table$adj.P.Val < 0.05)) # number of differentially expressed genes
+
+#Isoform DE
+#write.table(top.table, file = "../data/DE_analysis/glaunsinger_Brf1_48hpi_v_Ctrl_48_DE_analysis_mm10.txt", row.names = F, sep = "\t", quote = F)
+#MHV68
+#write.table(top.table, file = "../data/DE_analysis/glaunsinger_Brf1_48hpi_v_Ctrl_48_DE_mhv68_analysis.txt", row.names = F, sep = "\t", quote = F)
+
+#Genes DE
+write.table(top.table, file = "../data/DE_analysis/glaunsinger_Brf1_48hpi_v_Ctrl_48_DE_analysis_mm10_genes.txt", row.names = F, sep = "\t", quote = F)
+#write.table(top.table, file = "Genes_DE/glaunsinger_Brf1_48hpi_v_Ctrl_48_genes_DE_mhv68_analysis_be.txt", row.names = F, sep = "\t", quote = F)
+```
+
+### Differentially expressed genes between Ctrl 48hpi and Ctrl Mock
+```{r contrast2, echo=FALSE, warning=FALSE}
+contr <- makeContrasts(groupCtrl_48hpi - groupCtrl_Mock, levels = colnames(coef(fit)))
+
+tmp <- contrasts.fit(fit, contr)
+tmp <- eBayes(tmp)
+top.table <- topTable(tmp, adjust.method = "BH", sort.by = "P", n = Inf)
+
+top.table$Gene <- rownames(top.table)
+top.table <- top.table[,c("Gene", names(top.table)[1:6])]
+top.table <- data.frame(top.table, pb_to_ensembl[match(top.table$Gene, pb_to_ensembl$Transcrtipt),2])
+#top.table <- data.frame(top.table, anno[match(top.table$pb_to_ensembl.match.top.table.Gene..pb_to_ensembl.Transcrtipt..., anno$Gene.stable.ID.version),], logcpm[match(top.table$Gene,rownames(logcpm)),])
+
+cnames <- colnames(top.table)
+cnames[8] <- "associated.gene"
+cnames[1] <- "Transcript"
+colnames(top.table) <- cnames
+
+# head(top.table, n = 10)
+
+length(which(top.table$adj.P.Val < 0.05)) # number of differentially expressed genes
+
+#Isoform DE
+#write.table(top.table, file = "../data/DE_analysis/glaunsinger_Ctrl_48_v_Ctrl_Mock_DE_analysis_mm10.txt", row.names = F, sep = "\t", quote = F)
+
+#Genes DE
+write.table(top.table, file = "../data/DE_analysis/glaunsinger_Ctrl_48_v_Ctrl_Mock_DE_analysis_mm10_genes.txt", row.names = F, sep = "\t", quote = F)
+```
+
+
+### Differentially expressed genes between Ctrl 48hpi and Ctrl Mock
+```{r contrast3, echo=FALSE, warning=FALSE}
+contr <- makeContrasts(groupBrf1_Mock - groupCtrl_Mock, levels = colnames(coef(fit)))
+
+tmp <- contrasts.fit(fit, contr)
+tmp <- eBayes(tmp)
+top.table <- topTable(tmp, adjust.method = "BH", sort.by = "P", n = Inf)
+
+top.table$Gene <- rownames(top.table)
+top.table <- top.table[,c("Gene", names(top.table)[1:6])]
+top.table <- data.frame(top.table, pb_to_ensembl[match(top.table$Gene, pb_to_ensembl$Transcrtipt),2])
+#top.table <- data.frame(top.table, anno[match(top.table$pb_to_ensembl.match.top.table.Gene..pb_to_ensembl.Transcrtipt..., anno$Gene.stable.ID.version),], logcpm[match(top.table$Gene,rownames(logcpm)),])
+
+cnames <- colnames(top.table)
+cnames[8] <- "associated.gene"
+cnames[1] <- "Transcript"
+colnames(top.table) <- cnames
+
+# head(top.table, n = 10)
+
+length(which(top.table$adj.P.Val < 0.05)) # number of differentially expressed genes
+
+#Isoform DE
+#write.table(top.table, file = "../data/DE_analysis/glaunsinger_Brf1_Mock_v_Ctrl_Mock_DE_analysis_mm10.txt", row.names = F, sep = "\t", quote = F)
+
+#Genes DE
+write.table(top.table, file = "../data/DE_analysis/glaunsinger_Brf1_Mock_v_Ctrl_Mock_DE_analysis_mm10_genes.txt", row.names = F, sep = "\t", quote = F)
+```
+
+
+### Differentially expressed genes between (groupBrf1_48hpi -  groupBrf1_Mock) and (groupCtrl_48hpi - groupCtrl_Mock)
+```{r contrast4, echo=FALSE, warning=FALSE}
+contr <- makeContrasts((groupBrf1_48hpi -  groupBrf1_Mock) - (groupCtrl_48hpi - groupCtrl_Mock), levels = colnames(coef(fit)))
+
+tmp <- contrasts.fit(fit, contr)
+tmp <- eBayes(tmp)
+top.table <- topTable(tmp, adjust.method = "BH", sort.by = "P", n = Inf)
+
+top.table$Gene <- rownames(top.table)
+top.table <- top.table[,c("Gene", names(top.table)[1:6])]
+top.table <- data.frame(top.table, pb_to_ensembl[match(top.table$Gene, pb_to_ensembl$Transcrtipt),2])
+#top.table <- data.frame(top.table, anno[match(top.table$pb_to_ensembl.match.top.table.Gene..pb_to_ensembl.Transcrtipt..., anno$Gene.stable.ID.version),], logcpm[match(top.table$Gene,rownames(logcpm)),])
+
+cnames <- colnames(top.table)
+cnames[8] <- "associated.gene"
+cnames[1] <- "Transcript"
+colnames(top.table) <- cnames
+
+# head(top.table)
+
+length(which(top.table$adj.P.Val < 0.05)) # number of differentially expressed genes
+
+#Isoforms DE
+#write.table(top.table, file = "../data/DE_analysis/glaunsinger_Brf1_48hpi_Brf1_Mock_v_Ctrl_48hpi_Ctrl_Mock_DE_analysis_mm10.txt", row.names = F, sep = "\t", quote = F)
+
+#Genes DE
+write.table(top.table, file = "../data/DE_analysis/glaunsinger_Brf1_48hpi_v_Brf1_Mock_v_Ctrl_48hpi_Ctrl_Mock_DE_analysis_mm10_genes.txt", row.names = F, sep = "\t", quote = F)
+```
+
+
+### Differentially expressed genes between Brf1 48hpi and Brf1 Mock
+```{r contrast5, echo=FALSE, warning=FALSE}
+contr <- makeContrasts(groupBrf1_48hpi -  groupBrf1_Mock, levels = colnames(coef(fit)))
+
+tmp <- contrasts.fit(fit, contr)
+tmp <- eBayes(tmp)
+top.table <- topTable(tmp, adjust.method = "BH", sort.by = "P", n = Inf)
+
+top.table$Gene <- rownames(top.table)
+top.table <- top.table[,c("Gene", names(top.table)[1:6])]
+top.table <- data.frame(top.table, pb_to_ensembl[match(top.table$Gene, pb_to_ensembl$Transcrtipt),2])
+#top.table <- data.frame(top.table, anno[match(top.table$pb_to_ensembl.match.top.table.Gene..pb_to_ensembl.Transcrtipt..., anno$Gene.stable.ID.version),], logcpm[match(top.table$Gene,rownames(logcpm)),])
+
+cnames <- colnames(top.table)
+cnames[8] <- "associated.gene"
+cnames[1] <- "Transcript"
+colnames(top.table) <- cnames
+
+# head(top.table, n = 10)
+
+length(which(top.table$adj.P.Val < 0.05)) # number of differentially expressed genes
+
+#Isoform DE
+#write.table(top.table, file = "../data/DE_analysis/glaunsinger_Brf1_48hpi_v_Brf1_Mock_DE_analysis_mm10.txt", row.names = F, sep = "\t", quote = F)
+
+#Genes DE
+write.table(top.table, file = "../data/DE_analysis/glaunsinger_Brf1_48hpi_v_Brf1_Mock_DE_analysis_mm10_genes.txt", row.names = F, sep = "\t", quote = F)
+```
