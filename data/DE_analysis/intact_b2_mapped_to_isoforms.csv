@@ -1,0 +1,182 @@
+,mRNA isoform,B2 location
+0,PB.10440.188,Promoter
+1,PB.10448.15,Exon
+2,PB.10599.1,Intron
+3,PB.10786.9,Intron
+4,PB.10817.1,Multiple B2s
+5,PB.11006.11,Intron
+6,PB.1132.7,Intron
+7,PB.11443.106,Multiple B2s
+8,PB.11443.112,Multiple B2s
+9,PB.1153.3,Promoter
+11,PB.11671.49,Promoter
+13,PB.11671.62,Promoter
+15,PB.11941.1,Multiple B2s
+16,PB.11941.4,Multiple B2s
+17,PB.11941.89,Promoter
+18,PB.11948.11,Multiple B2s
+19,PB.12132.10,Intron
+20,PB.12132.3,Multiple B2s
+21,PB.12132.6,Multiple B2s
+22,PB.12278.23,Intron
+23,PB.12361.77,Intron
+25,PB.1256.124,Intron
+26,PB.1256.60,Intron
+27,PB.12757.32,Intron
+29,PB.12837.32,Intron
+30,PB.12906.28,Intron
+31,PB.13203.20,Multiple B2s
+32,PB.13478.57,Intron
+33,PB.13728.6,Promoter
+34,PB.13742.106,Intron
+35,PB.14484.15,Multiple B2s
+36,PB.1456.44,Intron
+37,PB.14590.40,Multiple B2s
+38,PB.14706.103,Promoter
+40,PB.14706.129,Promoter
+42,PB.14706.32,Promoter
+44,PB.14782.1,Promoter
+45,PB.14806.23,Multiple B2s
+46,PB.14806.25,Multiple B2s
+47,PB.14806.73,Multiple B2s
+48,PB.15079.105,Intron
+49,PB.15079.117,Intron
+50,PB.15079.120,Intron
+51,PB.15079.20,Intron
+52,PB.15079.37,Intron
+53,PB.15269.1,Intron
+54,PB.15323.17,Multiple B2s
+55,PB.15353.13,Promoter
+56,PB.15355.16,Intron
+59,PB.15355.21,Intron
+62,PB.15623.11,Intron
+63,PB.15836.14,Multiple B2s
+64,PB.15884.20,Intron
+66,PB.15957.17,Intron
+67,PB.15994.39,Promoter
+68,PB.15994.5,Promoter
+69,PB.16056.18,Multiple B2s
+70,PB.16220.18,Promoter
+71,PB.16220.26,Promoter
+72,PB.16220.27,Promoter
+73,PB.16220.33,Promoter
+74,PB.16247.50,Multiple B2s
+75,PB.16414.42,Intron
+77,PB.16694.65,Multiple B2s
+78,PB.16762.31,Multiple B2s
+79,PB.17011.10,Multiple B2s
+81,PB.17011.32,Multiple B2s
+83,PB.17052.21,Multiple B2s
+84,PB.17159.170,Intron
+86,PB.17166.118,Intron
+88,PB.17425.3,Intron
+89,PB.17444.2,Intron
+90,PB.17570.1,Promoter
+95,PB.17570.9,Promoter
+100,PB.17605.35,Multiple B2s
+101,PB.17665.106,Promoter
+106,PB.17665.29,Promoter
+111,PB.17665.99,Promoter
+116,PB.17940.2,Multiple B2s
+117,PB.17958.36,Intron
+118,PB.1835.3,Multiple B2s
+119,PB.18629.7,Intron
+120,PB.18663.1,Intron
+121,PB.18663.322,Intron
+122,PB.18663.357,Intron
+123,PB.18663.38,Intron
+124,PB.18663.47,Intron
+125,PB.1902.94,Intron
+126,PB.19138.11,Intron
+127,PB.19138.23,Intron
+128,PB.19138.40,Intron
+129,PB.19138.49,Intron
+130,PB.19327.168,Promoter
+134,PB.19515.54,Multiple B2s
+135,PB.19809.3,Intron
+136,PB.20024.38,Multiple B2s
+137,PB.20515.30,Promoter
+138,PB.20715.12,Multiple B2s
+139,PB.20878.1,Intron
+140,PB.21150.53,Promoter
+141,PB.21150.61,Promoter
+142,PB.21150.73,Promoter
+143,PB.21297.1,Promoter
+144,PB.21332.27,Promoter
+145,PB.21332.31,Promoter
+146,PB.21332.36,Promoter
+147,PB.21566.2,Promoter
+149,PB.21781.57,Promoter
+150,PB.21781.63,Promoter
+151,PB.21867.3,Intron
+152,PB.22219.22,Intron
+153,PB.22365.2,Multiple B2s
+154,PB.2247.23,Intron
+155,PB.22561.78,Intron
+156,PB.22692.8,Intron
+157,PB.22748.13,Promoter
+158,PB.22808.28,Intron
+159,PB.22868.2,Multiple B2s
+160,PB.2355.122,Intron
+162,PB.2355.149,Intron
+164,PB.23557.25,Intron
+165,PB.23977.40,Promoter
+166,PB.2463.8,Intron
+167,PB.2569.6,Promoter
+168,PB.2914.42,Intron
+170,PB.3029.90,Multiple B2s
+171,PB.3069.25,Multiple B2s
+173,PB.3155.14,Intron
+174,PB.316.57,Multiple B2s
+175,PB.3173.20,Intron
+176,PB.3173.25,Intron
+177,PB.3173.37,Intron
+178,PB.3173.5,Intron
+179,PB.3519.2,Intron
+180,PB.3519.3,Intron
+181,PB.3519.38,Intron
+182,PB.3856.1,Multiple B2s
+183,PB.3856.2,Multiple B2s
+184,PB.3879.125,Intron
+185,PB.3879.167,Intron
+186,PB.3879.87,Intron
+187,PB.4110.2,Promoter
+188,PB.4266.1,Promoter
+189,PB.4266.3,Promoter
+190,PB.468.7,Multiple B2s
+192,PB.5071.28,Intron
+194,PB.5522.1,Promoter
+195,PB.558.4,Intron
+201,PB.5581.2,Multiple B2s
+202,PB.5656.64,Promoter
+203,PB.5811.3,Intron
+204,PB.5822.181,Promoter
+205,PB.5822.195,Promoter
+206,PB.5822.99,Promoter
+207,PB.5877.1,Promoter
+208,PB.5895.10,Promoter
+211,PB.5895.5,Promoter
+214,PB.5990.57,Intron
+215,PB.654.62,Intron
+216,PB.6671.5,Promoter
+217,PB.6718.102,Intron
+218,PB.6796.26,Multiple B2s
+219,PB.6959.10,Multiple B2s
+220,PB.7038.13,Multiple B2s
+221,PB.7121.5,Intron
+222,PB.7969.276,Intron
+227,PB.7969.279,Intron
+232,PB.7969.280,Intron
+237,PB.8078.1,Promoter
+238,PB.8140.11,Intron
+239,PB.8300.54,Multiple B2s
+240,PB.8428.2,Intron
+241,PB.8496.26,Intron
+242,PB.8606.1,Multiple B2s
+243,PB.8636.23,Multiple B2s
+244,PB.864.9,Intron
+245,PB.9122.16,Promoter
+246,PB.9165.13,Intron
+247,PB.9263.15,Intron
+248,PB.9499.65,Intron
+249,PB.9943.16,Multiple B2s
